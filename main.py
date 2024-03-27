@@ -1,5 +1,6 @@
 import cv2
 import time
+from emailing import send_email
 
 # Activation of camera, int will represent which camera will be use
 video = cv2.VideoCapture(1)
@@ -8,7 +9,11 @@ time.sleep(1)
 # Storage of the first frame
 first_frame = None
 
+# List to trigger the emailing function
+status_list = []
+
 while True:
+    status = 0
     # Write the frame
     check, frame = video.read()
     # Processing of the frame to gray scale
@@ -37,7 +42,18 @@ while True:
         if cv2.contourArea(contour) < 5_000:
             continue
         x, y, w, h = cv2.boundingRect(contour)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        rectangle = cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+        # When the trigger is active use the function to send email
+        if rectangle.any():
+            status = 1
+
+    # If the new object will appear the status will change to 1
+    status_list.append(status)
+    status_list = status_list[-2:]
+    # If the object will be no longer in the frame, the status will change
+    # from 1 to 0, and the emailing function will be called
+    if status_list[0] == 1 and status_list[1] == 0:
+        send_email()
 
     cv2.imshow("My video", frame)
 

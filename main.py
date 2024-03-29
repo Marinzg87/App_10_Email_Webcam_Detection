@@ -1,5 +1,6 @@
 import cv2
 import time
+import glob
 from emailing import send_email
 
 # Activation of camera, int will represent which camera will be use
@@ -11,6 +12,9 @@ first_frame = None
 
 # List to trigger the emailing function
 status_list = []
+
+# Counter to write the frames
+count = 1
 
 while True:
     status = 0
@@ -46,6 +50,12 @@ while True:
         # When the trigger is active use the function to send email
         if rectangle.any():
             status = 1
+            # Store the frame
+            cv2.imwrite (f"images/{count}.png", frame)
+            count = count + 1
+            all_images = glob.glob("images/*.png")
+            index = int(len(all_images) / 2)
+            image_with_object = all_images[index]
 
     # If the new object will appear the status will change to 1
     status_list.append(status)

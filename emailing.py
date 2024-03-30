@@ -25,5 +25,6 @@ def send_email(image_path):
     gmail.sendmail(SENDER, RECEIVER, email_message.as_string())
     gmail.quit()
 
+
 if __name__ == "__main__":
     send_email(image_path="images/19.png")
